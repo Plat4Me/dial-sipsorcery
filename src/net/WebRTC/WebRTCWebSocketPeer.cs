@@ -2,7 +2,7 @@
 // Filename: WebRTCWebSocketPeer.cs
 //
 // Description: This class is NOT a required component for using WebRTC. It is a
-// convenience class provided to assist when using a web socket server for the 
+// convenience class provided to assist when using a web socket server for the
 // WebRTC signalling.
 //
 // Author(s):
@@ -11,7 +11,7 @@
 // History:
 // 12 Sep 2020	Aaron Clauson	Created, Dublin, Ireland.
 //
-// License: 
+// License:
 // BSD 3-Clause "New" or "Revised" License, see included LICENSE.md file.
 //-----------------------------------------------------------------------------
 
@@ -25,7 +25,7 @@ namespace SIPSorcery.Net
 {
     /// <summary>
     /// This class is NOT a required component for using WebRTC. It is a convenience
-    /// class provided to assist when using a web socket server for the  WebRTC 
+    /// class provided to assist when using a web socket server for the  WebRTC
     /// signalling.
     /// </summary>
     public class WebRTCWebSocketPeer : WebSocketBehavior
@@ -46,8 +46,8 @@ namespace SIPSorcery.Net
         public RTCAnswerOptions AnswerOptions { get; set; }
 
         /// <summary>
-        /// Optional filter that can be applied to remote ICE candidates. The filter is 
-        /// primarily intended for use in testing. In real application scenarios it's 
+        /// Optional filter that can be applied to remote ICE candidates. The filter is
+        /// primarily intended for use in testing. In real application scenarios it's
         /// normally desirable to accept all remote ICE candidates.
         /// </summary>
         public Func<RTCIceCandidateInit, bool> FilterRemoteICECandidates { get; set; }
@@ -101,7 +101,14 @@ namespace SIPSorcery.Net
                         logger.LogDebug($"Sending SDP answer to client {Context.UserEndPoint}.");
                         //logger.LogDebug(answerSdp.sdp);
 
-                        Context.WebSocket.Send(answerSdp.toJSON());
+                        if (Context.WebSocket.IsAlive)
+                        {
+                            Context.WebSocket.Send(answerSdp.toJSON());
+                        }
+                        else
+                        {
+                            //TODO ADD LOG
+                        }
                     }
                 }
             }
@@ -124,7 +131,14 @@ namespace SIPSorcery.Net
                 if (_pc.signalingState == RTCSignalingState.have_remote_offer ||
                     _pc.signalingState == RTCSignalingState.stable)
                 {
-                    Context.WebSocket.Send(iceCandidate.toJSON());
+                    if (Context.WebSocket.IsAlive)
+                    {
+                        Context.WebSocket.Send(iceCandidate.toJSON());
+                    }
+                    else
+                    {
+                        //TODO ADD LOG
+                    }
                 }
             };
 
@@ -136,7 +150,14 @@ namespace SIPSorcery.Net
                 logger.LogDebug($"Sending SDP offer to client {Context.UserEndPoint}.");
                 logger.LogDebug(offerSdp.sdp);
 
-                Context.WebSocket.Send(offerSdp.toJSON());
+                if (Context.WebSocket.IsAlive)
+                {
+                    Context.WebSocket.Send(offerSdp.toJSON());
+                }
+                else
+                {
+                    //TODO ADD LOG
+                }
             }
         }
     }

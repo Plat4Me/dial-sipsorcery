@@ -1,9 +1,9 @@
 ﻿//-----------------------------------------------------------------------------
 // Filename: SIPUserAgent.cs
 //
-// Description: A "full" SIP user agent that encompasses both client and server 
-// user agents. It is also able to manage in dialog operations after the call 
-// is established (the client and server user agents don't handle in dialog 
+// Description: A "full" SIP user agent that encompasses both client and server
+// user agents. It is also able to manage in dialog operations after the call
+// is established (the client and server user agents don't handle in dialog
 // operations).
 //
 // Author(s):
@@ -12,13 +12,13 @@
 // History:
 // 26 Nov 2019	Aaron Clauson   Created, Dublin, Ireland.
 // rj2: added overload for Answer with customHeader
-// 10 May 2020  Aaron Clauson   Added handling for REFER requests as per 
+// 10 May 2020  Aaron Clauson   Added handling for REFER requests as per
 //                              https://tools.ietf.org/html/rfc3515
 //                              and https://tools.ietf.org/html/rfc5589.
 // 17 May 2020  Aaron Clauson   Added exclusive transport option to simplify
 //                              incoming call handling.
 //
-// License: 
+// License:
 // BSD 3-Clause "New" or "Revised" License, see included LICENSE.md file.
 //-----------------------------------------------------------------------------
 
@@ -37,9 +37,9 @@ namespace SIPSorcery.SIP.App
 {
     /// <summary>
     /// A "full" SIP user agent that encompasses both client and server user agents.
-    /// It is also able to manage in dialog operations after the call is established 
+    /// It is also able to manage in dialog operations after the call is established
     /// (the client and server user agents don't handle in dialog operations).
-    /// 
+    ///
     /// Unlike other user agents this one also manages its own RTP session object
     /// which means it can handle things like call on and off hold, RTP end point
     /// changes and sending DTMF events.
@@ -78,13 +78,13 @@ namespace SIPSorcery.SIP.App
         private readonly bool m_isTransportExclusive;
 
         /// <summary>
-        /// The SIP account used by the server user agent and this user agent 
+        /// The SIP account used by the server user agent and this user agent
         /// for authentication challenges
         /// </summary>
         private readonly ISIPAccount m_answerSipAccount;
 
         /// <summary>
-        /// If set all communications are sent to this address irrespective of what the 
+        /// If set all communications are sent to this address irrespective of what the
         /// request and response headers indicate.
         /// </summary>
         private SIPEndPoint m_outboundProxy;
@@ -108,9 +108,9 @@ namespace SIPSorcery.SIP.App
 
         /// <summary>
         /// When a blind and attended transfer is in progress the original call will be placed
-        /// on hold (if not already). To prevent the response from the on hold re-INVITE 
+        /// on hold (if not already). To prevent the response from the on hold re-INVITE
         /// being applied to the media session while the new transfer call is being made or
-        /// accepted we don't apply session descriptions on requests or responses with the 
+        /// accepted we don't apply session descriptions on requests or responses with the
         /// old (original) call ID.
         /// </summary>
         private string _oldCallID;
@@ -301,7 +301,7 @@ namespace SIPSorcery.SIP.App
         public event Action<SIPDialogue> OnCallHungup;
 
         /// <summary>
-        /// Fires when a NOTIFY request is received that contains an update about the 
+        /// Fires when a NOTIFY request is received that contains an update about the
         /// status of a transfer. These events will be received by a user agent acting as the
         /// Transferor but only if the Transferee support the transfer subscription.
         /// </summary>
@@ -310,15 +310,15 @@ namespace SIPSorcery.SIP.App
         /// <summary>
         /// Fires when a REFER request is received that requests us to place a call to a
         /// new destination. The REFER request can be a blind transfer or an attended transfer.
-        /// The difference is whether the REFER request includes a Replaces parameter. If it does 
-        /// it's used to inform the transfer target (the transfer destination requested) that 
+        /// The difference is whether the REFER request includes a Replaces parameter. If it does
+        /// it's used to inform the transfer target (the transfer destination requested) that
         /// if they accept our call it should replace an existing one.
         /// </summary>
         /// <remarks>
         /// Parameters for event delegate:
         /// bool OnTransferRequested(SIPUserField referTo, string referredBy)
         /// SIPUserField: Is the destination that we are being asked to place a call to.
-        /// string referredBy: The Referred-By header from the REFER request that requested 
+        /// string referredBy: The Referred-By header from the REFER request that requested
         /// we do the transfer.
         /// bool: The boolean result can be returned as false to prevent the transfer. By default
         /// if no event handler is hooked up the transfer will be accepted.
@@ -337,14 +337,14 @@ namespace SIPSorcery.SIP.App
         /// </summary>
         public event Action<SIPUserField> OnTransferToTargetFailed;
 
-        /// <summary>	
-        /// The remote call party has put us on hold.	
-        /// </summary>	
+        /// <summary>
+        /// The remote call party has put us on hold.
+        /// </summary>
         public event Action RemotePutOnHold;
 
-        /// <summary>	
-        /// The remote call party has taken us off hold.	
-        /// </summary>	
+        /// <summary>
+        /// The remote call party has taken us off hold.
+        /// </summary>
         public event Action RemoteTookOffHold;
 
         /// <summary>
@@ -384,7 +384,7 @@ namespace SIPSorcery.SIP.App
         /// <summary>
         /// Creates a new instance where the user agent has exclusive control of the SIP transport.
         /// This is significant for incoming requests. WIth exclusive control the agent knows that
-        /// any request are for it and can handle accordingly. If the transport needs to be shared 
+        /// any request are for it and can handle accordingly. If the transport needs to be shared
         /// amongst multiple user agents use the alternative constructor.
         /// </summary>
         public SIPUserAgent()
@@ -402,7 +402,7 @@ namespace SIPSorcery.SIP.App
         /// <param name="transport">The transport layer to use for requests and responses.</param>
         /// <param name="outboundProxy">Optional. If set all requests and responses will be forwarded to this
         /// end point irrespective of their headers.</param>
-        /// <param name="isTransportExclusive">True is the SIP transport instance is for the exclusive use of 
+        /// <param name="isTransportExclusive">True is the SIP transport instance is for the exclusive use of
         /// this user agent or false if it's being shared amongst multiple agents.</param>
         /// <param name="answerSipAccount">Optional, will ensure that any request that require auth will be able to complete</param>
         public SIPUserAgent(SIPTransport transport, SIPEndPoint outboundProxy, bool isTransportExclusive = false, ISIPAccount answerSipAccount = null)
@@ -488,7 +488,7 @@ namespace SIPSorcery.SIP.App
         /// <summary>
         /// Attempts to place a new outgoing call.
         /// </summary>
-        /// <param name="sipCallDescriptor">A call descriptor containing the information about how 
+        /// <param name="sipCallDescriptor">A call descriptor containing the information about how
         /// and where to place the call.</param>
         /// <param name="mediaSession">The media session used for this call</param>
         /// <param name="ringTimeout">Optional. If non-zero will be treated as the number of seconds to let the call
@@ -609,7 +609,7 @@ namespace SIPSorcery.SIP.App
         /// call. It can still be rejected or answered after this point.
         /// </summary>
         /// <param name="inviteRequest">The invite request representing the incoming call.</param>
-        /// <returns>An ID string that needs to be supplied when the call is answered or rejected 
+        /// <returns>An ID string that needs to be supplied when the call is answered or rejected
         /// (used to manage multiple pending incoming calls).</returns>
         public SIPServerUserAgent AcceptCall(SIPRequest inviteRequest)
         {
@@ -792,7 +792,7 @@ namespace SIPSorcery.SIP.App
         /// <param name="timeout">Timeout for the transfer request to get accepted.</param>
         /// <param name="ct">Cancellation token. Can be set to cancel the transfer prior to it being
         /// accepted or timing out.</param>
-        /// <param name="customHeaders">Optional. Custom SIP-Headers that will be set in the REFER request sent 
+        /// <param name="customHeaders">Optional. Custom SIP-Headers that will be set in the REFER request sent
         /// to the remote party.</param>
         /// <param name="username">Optional. Used if proxy authentication required.</param>
         /// <param name="password">Optional. Used if proxy authentication required.</param>
@@ -819,7 +819,7 @@ namespace SIPSorcery.SIP.App
         /// <param name="timeout">Timeout for the transfer request to get accepted.</param>
         /// <param name="ct">Cancellation token. Can be set to cancel the transfer prior to it being
         /// accepted or timing out.</param>
-        /// <param name="customHeaders">Optional. Custom SIP-Headers that will be set in the REFER request sent 
+        /// <param name="customHeaders">Optional. Custom SIP-Headers that will be set in the REFER request sent
         /// to the remote party.</param>
         /// <param name="username">Optional. Used if proxy authentication required.</param>
         /// <param name="password">Optional. Used if proxy authentication required.</param>
@@ -970,8 +970,8 @@ namespace SIPSorcery.SIP.App
         /// <summary>
         /// Handler for when an in dialog request is received on an established call.
         /// Typical types of request will be re-INVITES for things like putting a call on or
-        /// off hold and REFER requests for transfers. Some in dialog request types, such 
-        /// as re-INVITES have specific events so they can be bubbled up to the 
+        /// off hold and REFER requests for transfers. Some in dialog request types, such
+        /// as re-INVITES have specific events so they can be bubbled up to the
         /// application to deal with.
         /// </summary>
         /// <param name="sipRequest">The in dialog request received.</param>
@@ -1047,7 +1047,7 @@ namespace SIPSorcery.SIP.App
 
                     if (OnReinviteRequest == null)
                     {
-                        // The application isn't prepared to accept re-INVITE requests and we can't work out what it was for. 
+                        // The application isn't prepared to accept re-INVITE requests and we can't work out what it was for.
                         // We'll reject as gently as we can to try and not lose the call.
                         SIPResponse notAcceptableResponse = SIPResponse.GetResponse(sipRequest, SIPResponseStatusCodesEnum.NotAcceptable, null);
                         reInviteTransaction.SendFinalResponse(notAcceptableResponse);
@@ -1148,7 +1148,7 @@ namespace SIPSorcery.SIP.App
                     SIPResponse acceptXferResponse = SIPResponse.GetResponse(referRequest, SIPResponseStatusCodesEnum.Accepted, null);
                     referResponseTx.SendResponse(acceptXferResponse);
 
-                    // While we process the transfer request we flag the original call so that any subsequent re-INVITE 
+                    // While we process the transfer request we flag the original call so that any subsequent re-INVITE
                     // requests or response (most likely relating to on/off hold) don't get applied to the media session.
                     _oldCallID = referRequest.Header.CallId;
 
@@ -1174,7 +1174,7 @@ namespace SIPSorcery.SIP.App
 
                     // The norefersub supported header means am event subscription is not expected.
                     // TODO: Add support for the event subscription for cases where norefersub is not applicable.
-                    // Need to create an implicit subscription to keep the remote party that requested the transfer up to date with the 
+                    // Need to create an implicit subscription to keep the remote party that requested the transfer up to date with the
                     // status and outcome of the REFER request
                     _ = Task.Run(async () =>
                     {
@@ -1319,8 +1319,8 @@ namespace SIPSorcery.SIP.App
                     //UASInviteTransaction uasTx = new UASInviteTransaction(m_transport, sipRequest, null);
                     var uas = AcceptCall(sipRequest);
 
-                    // An attended transfer INVITE should only be accepted if the dialog parameters in the Replaces header 
-                    // match the current dialog. But... to be more accepting with only a small increase in risk we only 
+                    // An attended transfer INVITE should only be accepted if the dialog parameters in the Replaces header
+                    // match the current dialog. But... to be more accepting with only a small increase in risk we only
                     // require a match on the Call-ID (only small increase in risk as if a malicious party can get 1
                     // of the three required headers they can almost certainly get all 3).
                     SIPReplacesParameter replaces = SIPReplacesParameter.Parse(sipRequest.Header.Replaces);
@@ -1345,7 +1345,7 @@ namespace SIPSorcery.SIP.App
 
                 if (!m_isTransportExclusive)
                 {
-                    // If there is no handler for an incoming call request it gets ignored. The SIP transport layer can have 
+                    // If there is no handler for an incoming call request it gets ignored. The SIP transport layer can have
                     // multiple handlers for incoming requests and it's likely a different handler is processing incoming calls.
                     OnIncomingCall?.Invoke(this, sipRequest);
                 }
@@ -1382,14 +1382,14 @@ namespace SIPSorcery.SIP.App
         {
             // The desired experience when accepting an attended transfer is to:
             // - If the current call is not already on hold then put it on hold,
-            // - Automatically answer the new call (maybe some kind of notification should be given but that seems 
+            // - Automatically answer the new call (maybe some kind of notification should be given but that seems
             //   overkill and annoying since the initial caller would have most likely informed them the transfer
             //   was about to take place),
             // - Re-use the media session from the initial call but adjust to use new end points and re-select the codecs,
-            // - If the new call is answered then it now becomes active and a BYE request should be sent to hangup the 
+            // - If the new call is answered then it now becomes active and a BYE request should be sent to hangup the
             //   original call.
 
-            // While we process the transfer request we flag the original call so that any subsequent re-INVITE 
+            // While we process the transfer request we flag the original call so that any subsequent re-INVITE
             // requests or response (most likely relating to on/off hold) don't get applied to the media session.
             _oldCallID = uas.ClientTransaction.TransactionRequest.Header.CallId;
 
@@ -1611,8 +1611,8 @@ namespace SIPSorcery.SIP.App
             {
                 if (sipResponse.Body == null && ((MediaSession as RTPSession)?.IsStarted ?? false))
                 {
-                    // This is a special case where no SDP answer was received in the Ok response or the ACK 
-                    // BUT an SDP answer was supplied in a 183 Session Progress response. 
+                    // This is a special case where no SDP answer was received in the Ok response or the ACK
+                    // BUT an SDP answer was supplied in a 183 Session Progress response.
                     // TODO: Find the specification that details this behaviour.
                     // See https://github.com/sipsorcery-org/sipsorcery/issues/414.
                     m_sipDialogue = uac.SIPDialogue;
@@ -1752,7 +1752,15 @@ namespace SIPSorcery.SIP.App
             }
             finally
             {
-                m_semaphoreSlim.Release();
+                try
+                {
+                    m_semaphoreSlim.Release();
+                }
+                catch(Exception e)
+                {
+                    //TODO Write to log
+                }
+
             }
         }
 
@@ -1803,7 +1811,7 @@ namespace SIPSorcery.SIP.App
         }
 
         /// <summary>
-        /// Processes an in-dialog SDP offer from the remote party to check whether the 
+        /// Processes an in-dialog SDP offer from the remote party to check whether the
         /// call hold status has changed.
         /// </summary>
         /// <param name="remoteSDP">The in-dialog SDP received from he remote party.</param>
