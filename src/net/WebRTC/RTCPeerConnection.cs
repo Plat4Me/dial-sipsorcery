@@ -11,7 +11,7 @@
 // - "Session Description Protocol (SDP) Offer/Answer Procedures For Stream
 //   Control Transmission Protocol(SCTP) over Datagram Transport Layer
 //   Security(DTLS) Transport." [ed: specification for negotiating
-//   data channels in SDP, this defines the SDP "sctp-port" attribute] 
+//   data channels in SDP, this defines the SDP "sctp-port" attribute]
 //   https://tools.ietf.org/html/rfc8841
 // - "SDP-based Data Channel Negotiation" [ed: not currently implemented,
 //   actually seems like a big pain to implement this given it can already
@@ -30,7 +30,7 @@
 // 22 Mar 2021  Aaron Clauson   Refactored data channels logic for new SCTP
 //                              implementation.
 //
-// License: 
+// License:
 // BSD 3-Clause "New" or "Revised" License, see included LICENSE.md file.
 //-----------------------------------------------------------------------------
 
@@ -244,7 +244,7 @@ namespace SIPSorcery.Net
         private RTCConfiguration _configuration;
 
         /// <summary>
-        /// The certificate being used to negotiate the DTLS handshake with the 
+        /// The certificate being used to negotiate the DTLS handshake with the
         /// remote peer.
         /// </summary>
         //private RTCCertificate _currentCertificate;
@@ -257,7 +257,7 @@ namespace SIPSorcery.Net
         //}
 
         /// <summary>
-        /// The fingerprint of the certificate being used to negotiate the DTLS handshake with the 
+        /// The fingerprint of the certificate being used to negotiate the DTLS handshake with the
         /// remote peer.
         /// </summary>
         public RTCDtlsFingerprint DtlsCertificateFingerprint { get; private set; }
@@ -272,7 +272,7 @@ namespace SIPSorcery.Net
         public RTCSctpTransport sctp { get; private set; }
 
         /// <summary>
-        /// Informs the application that session negotiation needs to be done (i.e. a createOffer call 
+        /// Informs the application that session negotiation needs to be done (i.e. a createOffer call
         /// followed by setLocalDescription).
         /// </summary>
         public event Action onnegotiationneeded;
@@ -343,7 +343,7 @@ namespace SIPSorcery.Net
         public event Action<RTCIceCandidate, string> onicecandidateerror;
 
         /// <summary>
-        /// The signaling state has changed. This state change is the result of either setLocalDescription or 
+        /// The signaling state has changed. This state change is the result of either setLocalDescription or
         /// setRemoteDescription being invoked.
         /// </summary>
         public event Action onsignalingstatechange;
@@ -359,7 +359,7 @@ namespace SIPSorcery.Net
         public event Action<RTCIceGatheringState> onicegatheringstatechange;
 
         /// <summary>
-        /// The state of the peer connection. A state of connected means the ICE checks have 
+        /// The state of the peer connection. A state of connected means the ICE checks have
         /// succeeded and the DTLS handshake has completed. Once in the connected state it's
         /// suitable for media packets can be exchanged.
         /// </summary>
@@ -385,7 +385,7 @@ namespace SIPSorcery.Net
             base(true, true, true, configuration?.X_BindAddress, bindPort, portRange)
         {
             dataChannels = new RTCDataChannelCollection(useEvenIds: () => _dtlsHandle.IsClient);
-            
+
             if (_configuration != null &&
                _configuration.iceTransportPolicy == RTCIceTransportPolicy.relay &&
                _configuration.iceServers?.Count == 0)
@@ -436,7 +436,7 @@ namespace SIPSorcery.Net
 
             OnRtpClosed += Close;
             OnRtcpBye += Close;
-            
+
             //Cancel Negotiation Task Event to Prevent Duplicated Calls
             onnegotiationneeded += CancelOnNegotiationNeededTask;
 
@@ -664,7 +664,7 @@ namespace SIPSorcery.Net
         /// <remarks>
         /// As specified in https://www.w3.org/TR/webrtc/#dom-peerconnection-setlocaldescription.
         /// </remarks>
-        /// <param name="init">Optional. The session description to set as 
+        /// <param name="init">Optional. The session description to set as
         /// local description. If not supplied then an offer or answer will be created as required.
         /// </param>
         public Task setLocalDescription(RTCSessionDescriptionInit init)
@@ -1020,7 +1020,7 @@ namespace SIPSorcery.Net
 
         /// <summary>
         /// For standard use this method should not need to be called. The remote peer's ICE
-        /// user and password will be set when from the SDP. This method is provided for 
+        /// user and password will be set when from the SDP. This method is provided for
         /// diagnostics purposes.
         /// </summary>
         /// <param name="remoteIceUser">The remote peer's ICE user value.</param>
@@ -1069,12 +1069,12 @@ namespace SIPSorcery.Net
 
             string dtlsFingerprint = this.DtlsCertificateFingerprint.ToString();
             bool iceCandidatesAdded = false;
-            
+
 
             // Local function to add ICE candidates to one of the media announcements.
             void AddIceCandidates(SDPMediaAnnouncement announcement)
             {
-                if (_rtpIceChannel.Candidates?.Count > 0)
+                if (_rtpIceChannel.Candidates.Length > 0)
                 {
                     announcement.IceCandidates = new List<string>();
 
@@ -1238,9 +1238,9 @@ namespace SIPSorcery.Net
         {
             //logger.LogDebug($"RTP channel received a packet from {remoteEP}, {buffer?.Length} bytes.");
 
-            // By this point the RTP ICE channel has already processed any STUN packets which means 
+            // By this point the RTP ICE channel has already processed any STUN packets which means
             // it's only necessary to separate RTP/RTCP from DTLS.
-            // Because DTLS packets can be fragmented and RTP/RTCP should never be use the RTP/RTCP 
+            // Because DTLS packets can be fragmented and RTP/RTCP should never be use the RTP/RTCP
             // prefix to distinguish.
 
             if (buffer?.Length > 0)
@@ -1275,7 +1275,7 @@ namespace SIPSorcery.Net
         /// <summary>
         /// Used to add a local ICE candidate. These are for candidates that the application may
         /// want to provide in addition to the ones that will be automatically determined. An
-        /// example is when a machine is behind a 1:1 NAT and the application wants a host 
+        /// example is when a machine is behind a 1:1 NAT and the application wants a host
         /// candidate with the public IP address to be included.
         /// </summary>
         /// <param name="candidateInit">The ICE candidate to add.</param>
@@ -1408,7 +1408,7 @@ namespace SIPSorcery.Net
         }
 
         /// <summary>
-        /// Initialises the SCTP transport. This will result in the DTLS SCTP transport listening 
+        /// Initialises the SCTP transport. This will result in the DTLS SCTP transport listening
         /// for incoming INIT packets if the remote peer attempts to create the association. The local
         /// peer will NOT attempt to establish the association at this point. It's up to the
         /// application to specify it wants a data channel to initiate the SCTP association attempt.
@@ -1519,7 +1519,7 @@ namespace SIPSorcery.Net
         }
 
         /// <summary>
-        /// When a data channel is requested an SCTP association is needed. This method attempts to 
+        /// When a data channel is requested an SCTP association is needed. This method attempts to
         /// initialise the association if it is not already available.
         /// </summary>
         private async Task InitialiseSctpAssociation()
@@ -1620,7 +1620,7 @@ namespace SIPSorcery.Net
             else
             {
                 // Data channels can be created prior to the SCTP transport being available.
-                // They will act as placeholders and then be opened once the SCTP transport 
+                // They will act as placeholders and then be opened once the SCTP transport
                 // becomes available.
                 dataChannels.AddPendingChannel(channel);
                 return channel;
@@ -1651,8 +1651,8 @@ namespace SIPSorcery.Net
 
         /// <summary>
         ///  DtlsHandshake requires DtlsSrtpTransport to work.
-        ///  DtlsSrtpTransport is similar to C++ DTLS class combined with Srtp class and can perform 
-        ///  Handshake as Server or Client in same call. The constructor of transport require a DtlsStrpClient 
+        ///  DtlsSrtpTransport is similar to C++ DTLS class combined with Srtp class and can perform
+        ///  Handshake as Server or Client in same call. The constructor of transport require a DtlsStrpClient
         ///  or DtlsSrtpServer to work.
         /// </summary>
         /// <param name="dtlsHandle">The DTLS transport handle to perform the handshake with.</param>
@@ -1700,7 +1700,7 @@ namespace SIPSorcery.Net
                         dtlsHandle.ProtectRTCP,
                         dtlsHandle.UnprotectRTCP);
 
-                        
+
                     IsDtlsNegotiationComplete = true;
 
                     return true;
