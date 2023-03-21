@@ -131,11 +131,11 @@ namespace SIPSorcery.Net
                 if (_pc.signalingState == RTCSignalingState.have_remote_offer ||
                     _pc.signalingState == RTCSignalingState.stable)
                 {
-                    if (Context.WebSocket.IsAlive)
+                    try
                     {
                         Context.WebSocket.Send(iceCandidate.toJSON());
                     }
-                    else
+                    catch (Exception ex)
                     {
                         //TODO ADD LOG
                     }
@@ -150,11 +150,11 @@ namespace SIPSorcery.Net
                 logger.LogDebug($"Sending SDP offer to client {Context.UserEndPoint}.");
                 logger.LogDebug(offerSdp.sdp);
 
-                if (Context.WebSocket.IsAlive)
+                try
                 {
                     Context.WebSocket.Send(offerSdp.toJSON());
                 }
-                else
+                catch (Exception ex)
                 {
                     //TODO ADD LOG
                 }
