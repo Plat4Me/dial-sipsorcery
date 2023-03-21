@@ -121,6 +121,8 @@ namespace SIPSorcery.SIP.App
         /// </summary>
         private bool _isClosed;
 
+        private bool _disposed = false;
+
         /// <summary>
         /// This timer is used when an outgoing call is made with a ring timeout specified.
         /// If the call is not answered within the timeout it will be cancelled by this agent.
@@ -535,7 +537,7 @@ namespace SIPSorcery.SIP.App
                     _ringTimeout = new Timer((state) => m_uac?.Cancel(), null, ringTimeout * 1000, Timeout.Infinite);
                 }
 
-                    // This initiates the call but does not wait for an answer.
+                // This initiates the call but does not wait for an answer.
                 m_uac.Call(sipCallDescriptor, serverEndPoint);
             }
             else
@@ -924,7 +926,8 @@ namespace SIPSorcery.SIP.App
                     {
                         var newRequest = referRequest.DuplicateAndAuthenticate(sipResponse.Header.AuthenticationHeaders, username, password);
                         referTx = new SIPNonInviteTransaction(m_transport, newRequest, null);
-                        SIPTransactionResponseReceivedDelegate referTxStatusHandlerAuthRequest = (localSIPEndPointAuthRequest, remoteEndPointAuthRequest, sipTransactionAuthRequest, sipResponseAuthRequest) => {
+                        SIPTransactionResponseReceivedDelegate referTxStatusHandlerAuthRequest = (localSIPEndPointAuthRequest, remoteEndPointAuthRequest, sipTransactionAuthRequest, sipResponseAuthRequest) =>
+                        {
                             if (sipResponseAuthRequest.Header.CSeqMethod == SIPMethodsEnum.REFER && sipResponseAuthRequest.Status == SIPResponseStatusCodesEnum.Accepted)
                             {
                                 logger.LogInformation("Call transfer was accepted by remote server.");
@@ -1745,6 +1748,7 @@ namespace SIPSorcery.SIP.App
         /// </summary>
         private void CallEnded(string callId)
         {
+            if (_disposed) return;
             try
             {
                 m_semaphoreSlim.Wait();
@@ -1756,7 +1760,7 @@ namespace SIPSorcery.SIP.App
                 {
                     m_semaphoreSlim.Release();
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     //TODO Write to log
                 }
@@ -1931,6 +1935,8 @@ namespace SIPSorcery.SIP.App
         /// </summary>
         public void Dispose()
         {
+            if (_disposed) return;
+            _disposed = true;
             if (IsCallActive)
             {
                 Hangup();
